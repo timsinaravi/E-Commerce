@@ -29,7 +29,7 @@ public class Product {
     private BigDecimal price;
 
     @Column(nullable = false)
-    private int stock;
+    private Integer stock;
 
     @Column(nullable = false)
     private String imageUrl;
