@@ -58,6 +58,19 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.mapToDto(product);
     }
 
+
+    @Override
+    public List<ProductResponseDto> searchProductByName(String name) {
+
+        List<Product> product = productRepository.findByNameContainsIgnoreCase(name);
+
+        List<ProductResponseDto> dtoList = new ArrayList<>();
+        for (Product products : product) {
+            dtoList.add(productMapper.mapToDto(products));
+        }
+        return dtoList;
+    }
+
     @Override
     public ProductResponseDto updateProduct(Long id, ProductRequestDto dto) {
 
@@ -82,5 +95,6 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.deleteById(id);
     }
+
 
 }

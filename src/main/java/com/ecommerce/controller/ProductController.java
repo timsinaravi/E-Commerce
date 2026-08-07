@@ -5,6 +5,7 @@ import com.ecommerce.dto.response.ProductResponseDto;
 import com.ecommerce.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +37,13 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
 
         ProductResponseDto response  = productService.getProductById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponseDto>> searchProductByName(@RequestParam("name") String name) {
+
+        List<ProductResponseDto> response = productService.searchProductByName(name);
         return ResponseEntity.ok(response);
     }
 
