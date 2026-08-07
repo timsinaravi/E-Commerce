@@ -1,6 +1,7 @@
 package com.ecommerce.service;
 
 import com.ecommerce.dto.request.ProductRequestDto;
+import com.ecommerce.dto.response.CategoryResponseDto;
 import com.ecommerce.dto.response.ProductResponseDto;
 
 import java.util.List;
@@ -18,6 +19,9 @@ public interface ProductService {
     void deleteProduct(Long id);
 
     List<ProductResponseDto> searchProductByName(String name);
+
+    List<ProductResponseDto> getProductsByCategory(Long categoryId);
+
 
 
 }

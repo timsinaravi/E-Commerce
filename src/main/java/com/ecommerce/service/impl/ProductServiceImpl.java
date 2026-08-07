@@ -6,6 +6,7 @@ import com.ecommerce.entity.Category;
 import com.ecommerce.entity.Product;
 import com.ecommerce.exception.CategoryNotFoundException;
 import com.ecommerce.exception.ProductNotFoundException;
+import com.ecommerce.mapper.CategoryMapper;
 import com.ecommerce.mapper.ProductMapper;
 import com.ecommerce.repository.CategoryRepository;
 import com.ecommerce.repository.ProductRepository;
@@ -23,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto dto) {
@@ -62,11 +64,25 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponseDto> searchProductByName(String name) {
 
-        List<Product> product = productRepository.findByNameContainsIgnoreCase(name);
+        List<Product> products = productRepository.findByNameContainsIgnoreCase(name);
 
         List<ProductResponseDto> dtoList = new ArrayList<>();
-        for (Product products : product) {
-            dtoList.add(productMapper.mapToDto(products));
+        for (Product product : products) {
+            dtoList.add(productMapper.mapToDto(product));
+        }
+        return dtoList;
+    }
+
+    @Override
+    public List<ProductResponseDto> getProductsByCategory(Long categoryId) {
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found"));
+
+        List<Product> products = productRepository.findByCategory(category);
+        List<ProductResponseDto> dtoList = new ArrayList<>();
+        for (Product product : products){
+             dtoList.add(productMapper.mapToDto(product));
         }
         return dtoList;
     }
@@ -95,6 +111,5 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.deleteById(id);
     }
-
 
 }
