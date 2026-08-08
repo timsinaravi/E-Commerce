@@ -41,5 +41,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
+
 
 }
