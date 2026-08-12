@@ -6,6 +6,7 @@ import com.ecommerce.dto.response.CartItemResponseDto;
 import com.ecommerce.dto.response.CartResponseDto;
 import com.ecommerce.entity.Cart;
 import com.ecommerce.entity.User;
+import com.ecommerce.exception.CartNotFoundException;
 import com.ecommerce.exception.DuplicateCartException;
 import com.ecommerce.exception.UserNotFoundException;
 import com.ecommerce.mapper.CartMapper;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 @RequiredArgsConstructor
@@ -47,7 +49,16 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponseDto getCart(Long userId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        Cart cart = user.getCart();
+        if (cart == null) {
+            throw new CartNotFoundException("Cart not found");
+        }
+        return cartMapper.mapToDto(cart);
+
     }
 
 
