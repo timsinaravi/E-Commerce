@@ -4,13 +4,13 @@ import com.ecommerce.dto.request.CartItemRequestDto;
 import com.ecommerce.dto.request.UpdateCartItemRequestDto;
 import com.ecommerce.dto.response.CartItemResponseDto;
 import com.ecommerce.dto.response.CartResponseDto;
-import com.ecommerce.entity.Cart;
-import com.ecommerce.entity.User;
-import com.ecommerce.exception.CartNotFoundException;
-import com.ecommerce.exception.DuplicateCartException;
-import com.ecommerce.exception.UserNotFoundException;
+import com.ecommerce.entity.*;
+import com.ecommerce.exception.*;
+import com.ecommerce.mapper.CartItemMapper;
 import com.ecommerce.mapper.CartMapper;
+import com.ecommerce.repository.CartItemRepository;
 import com.ecommerce.repository.CartRepository;
+import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,10 @@ public class CartServiceImpl implements CartService {
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final ProductRepository productRepository;
     private final CartMapper cartMapper;
+    private final CartItemRepository cartItemRepository;
+    private final CartItemMapper cartItemMapper;
 
 
     @Override
@@ -58,14 +61,60 @@ public class CartServiceImpl implements CartService {
             throw new CartNotFoundException("Cart not found");
         }
         return cartMapper.mapToDto(cart);
-
     }
 
 
     @Override
     public CartItemResponseDto addCartItem(Long userId, CartItemRequestDto dto) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.getCart() == null) {
+            throw new CartNotFoundException("Cart not found");
+        }
+
+        Product product = productRepository.findById(dto.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+        Cart cart = user.getCart();
+        List<CartItem> cartItems = cart.getCartItems();
+        int totalQuantity = dto.getQuantity();
+        boolean isProductFound = false;
+        CartItem cartItemToSave = null;
+
+        for (CartItem cartItem : cartItems) {
+            if (cartItem.getProduct().equals(product)) {
+                totalQuantity = cartItem.getQuantity() + dto.getQuantity();
+                if (totalQuantity > product.getStock()) {
+                    throw new OutOfStockException("Out of stock");
+                }
+                cartItem.setQuantity(totalQuantity);
+                cartItemToSave = cartItem;
+                isProductFound = true;
+                break;
+            }
+        }
+
+        if (!isProductFound) {
+
+            if (totalQuantity > product.getStock()) {
+                throw new OutOfStockException("Out of stock");
+            }
+            CartItem cartItem = new CartItem();
+
+            cartItem.setProduct(product);
+            cartItem.setQuantity(dto.getQuantity());
+            cartItem.setCart(cart);
+
+            List<CartItem> cartItemList = cart.getCartItems();
+            cartItemList.add(cartItem);
+            cartItemToSave = cartItem;
+        }
+       CartItem cartItemSaved = cartItemRepository.save(cartItemToSave);
+        return cartItemMapper.mapToDto(cartItemSaved);
     }
+
 
     @Override
     public CartItemResponseDto updateCartItem(Long userId, Long cartItemId, UpdateCartItemRequestDto dto) {
