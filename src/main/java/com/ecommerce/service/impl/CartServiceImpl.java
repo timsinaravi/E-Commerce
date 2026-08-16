@@ -146,7 +146,26 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public void removeCartItem(Long userId, Long cartItemId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.getCart() == null) {
+            throw new CartNotFoundException("Cart not found");
+        }
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemNotFound("Cart Item not found"));
+
+        Cart cart = user.getCart();
+        List<CartItem> cartItems = cart.getCartItems();
+
+        if (!cart.equals(cartItem.getCart())) {
+            throw new CartItemNotFound("Cart Item not found");
+        }
+        cartItems.remove(cartItem);
+        cartItemRepository.delete(cartItem);
+
     }
 
     @Override
