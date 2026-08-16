@@ -6,6 +6,8 @@ import com.ecommerce.entity.CartItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 @RequiredArgsConstructor
 public class CartItemMapper {
@@ -29,6 +31,8 @@ public class CartItemMapper {
         dto.setId(cartItem.getId());
         dto.setQuantity(cartItem.getQuantity());
         dto.setProduct(productMapper.mapToDto(cartItem.getProduct()));
+        dto.setSubtotal(cartItem.getProduct().getPrice()
+                .multiply(BigDecimal.valueOf(cartItem.getQuantity())));
 
         return dto;
 
