@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.dto.request.CartItemRequestDto;
+import com.ecommerce.dto.request.UpdateCartItemRequestDto;
 import com.ecommerce.dto.response.CartItemResponseDto;
 import com.ecommerce.dto.response.CartResponseDto;
 import com.ecommerce.service.CartService;
@@ -36,6 +37,12 @@ public class CartController {
 
         CartItemResponseDto response = cartService.addCartItem(userId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/users/{userId}/cartitems/{cartItemId}")
+    public ResponseEntity<CartItemResponseDto> updateCartItem(@PathVariable Long userId, @PathVariable Long cartItemId, @Valid @RequestBody UpdateCartItemRequestDto dto) {
+        CartItemResponseDto response = cartService.updateCartItem(userId, cartItemId, dto);
+        return ResponseEntity.ok(response);
     }
 
 }

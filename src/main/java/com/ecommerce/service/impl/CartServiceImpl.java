@@ -118,7 +118,30 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartItemResponseDto updateCartItem(Long userId, Long cartItemId, UpdateCartItemRequestDto dto) {
-        throw new UnsupportedOperationException("Not implemented yet");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.getCart() == null) {
+            throw new CartNotFoundException("Cart not found");
+        }
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartItemNotFound("Cart Item not found"));
+
+        Cart cart = user.getCart();
+
+        if (cart.equals(cartItem.getCart())) {
+            if (dto.getQuantity() > cartItem.getProduct().getStock()) {
+                throw new OutOfStockException("Out of stock");
+            }
+            cartItem.setQuantity(dto.getQuantity());
+        }else {
+            throw new CartItemNotFound("Cart Item not found");
+        }
+
+        CartItem updateCartItem = cartItemRepository.save(cartItem);
+        return cartItemMapper.mapToDto(updateCartItem);
     }
 
     @Override

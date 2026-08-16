@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class CartMapper {
 
-    private CartItemMapper cartItemMapper;
+    private final CartItemMapper cartItemMapper;
 
     public CartResponseDto mapToDto(Cart cart){
 
