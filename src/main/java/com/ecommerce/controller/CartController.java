@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -55,6 +57,13 @@ public class CartController {
     public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
         cartService.clearCart(userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/carts/{userId}/total")
+    public ResponseEntity<BigDecimal> getCartTotal(@PathVariable Long userId) {
+
+        BigDecimal response = cartService.getCartTotal(userId);
+        return ResponseEntity.ok(response);
     }
 
 }

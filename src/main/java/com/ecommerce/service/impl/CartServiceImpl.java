@@ -188,7 +188,23 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public BigDecimal getCartTotal(Long userId) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
+
+        if (user.getCart() == null){
+            throw new CartNotFoundException("Cart not found");
+        }
+
+        List<CartItem> cartItems = user.getCart().getCartItems();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (CartItem cartItem : cartItems) {
+            BigDecimal subTotal  =  cartItem.getProduct().getPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            total =  total.add(subTotal);
+        }
+
+        return total;
     }
 
 }
