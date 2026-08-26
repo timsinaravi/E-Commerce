@@ -3,10 +3,7 @@ package com.ecommerce.service.impl;
 import com.ecommerce.dto.response.OrderResponseDto;
 import com.ecommerce.entity.*;
 import com.ecommerce.enums.Status;
-import com.ecommerce.exception.CartItemNotFound;
-import com.ecommerce.exception.CartNotFoundException;
-import com.ecommerce.exception.OutOfStockException;
-import com.ecommerce.exception.UserNotFoundException;
+import com.ecommerce.exception.*;
 import com.ecommerce.mapper.OrderMapper;
 import com.ecommerce.repository.CartItemRepository;
 import com.ecommerce.repository.OrderItemRepository;
@@ -94,6 +91,14 @@ public class OrderServiceImpl implements OrderService {
             dtoList.add(orderMapper.mapToDto(order));
         }
         return dtoList;
+    }
+
+    @Override
+    public OrderResponseDto getOrder(Long id) {
+
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found"));
+        return orderMapper.mapToDto(order);
     }
 
 
