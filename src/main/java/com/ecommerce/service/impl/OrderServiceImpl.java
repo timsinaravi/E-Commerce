@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -82,4 +83,18 @@ public class OrderServiceImpl implements OrderService {
         cartItems.clear();
         return orderMapper.mapToDto(savedOrder);
     }
+
+    @Override
+    public List<OrderResponseDto> getAllOrders() {
+
+        List<Order> orders = orderRepository.findAll();
+        List<OrderResponseDto> dtoList = new ArrayList<>();
+
+        for (Order order : orders) {
+            dtoList.add(orderMapper.mapToDto(order));
+        }
+        return dtoList;
+    }
+
+
 }
