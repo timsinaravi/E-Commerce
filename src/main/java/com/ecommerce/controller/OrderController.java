@@ -16,7 +16,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/user/{userId}")
+    @PostMapping("/{userId}")
     public ResponseEntity<OrderResponseDto> placeOrder(@PathVariable Long userId) {
 
         OrderResponseDto response = orderService.placeOrder(userId);
@@ -36,4 +36,12 @@ public class OrderController {
         OrderResponseDto response = orderService.getOrder(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<OrderResponseDto>> getOrdersByUser(@PathVariable Long userId) {
+
+        List<OrderResponseDto> response = orderService.getOrdersByUser(userId);
+        return ResponseEntity.ok(response);
+    }
+
 }

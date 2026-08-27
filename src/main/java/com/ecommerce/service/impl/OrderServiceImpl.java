@@ -101,5 +101,20 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.mapToDto(order);
     }
 
+    @Override
+    public List<OrderResponseDto> getOrdersByUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
+
+        List<Order> orders = orderRepository.findOrdersByUserId(userId);
+        List<OrderResponseDto> dtoList = new ArrayList<>();
+
+        for (Order order : orders ) {
+            dtoList.add(orderMapper.mapToDto(order));
+        }
+        return dtoList;
+    }
+
 
 }
