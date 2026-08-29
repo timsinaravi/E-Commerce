@@ -6,7 +6,6 @@ import com.ecommerce.entity.Category;
 import com.ecommerce.entity.Product;
 import com.ecommerce.exception.CategoryNotFoundException;
 import com.ecommerce.exception.ProductNotFoundException;
-import com.ecommerce.mapper.CategoryMapper;
 import com.ecommerce.mapper.ProductMapper;
 import com.ecommerce.repository.CategoryRepository;
 import com.ecommerce.repository.ProductRepository;
@@ -24,7 +23,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
-    private final CategoryMapper categoryMapper;
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto dto) {
@@ -93,11 +91,15 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found"));
 
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found"));
+
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setStock(dto.getStock());
         product.setImageUrl(dto.getImageUrl());
+        product.setCategory(category);
 
         Product updatedProduct = productRepository.save(product);
         return productMapper.mapToDto(updatedProduct);

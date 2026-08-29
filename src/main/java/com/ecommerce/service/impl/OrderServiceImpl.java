@@ -12,6 +12,7 @@ import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final CartItemRepository cartItemRepository;
 
 
+    @Transactional
     @Override
     public OrderResponseDto placeOrder(Long userId) {
 
@@ -71,7 +73,7 @@ public class OrderServiceImpl implements OrderService {
             order.getOrderItems().add(orderItem);
             cartItem.getProduct().setStock(cartItem.getProduct().getStock() - cartItem.getQuantity());
 
-            OrderItem savedOrderItem = orderItemRepository.save(orderItem);
+            orderItemRepository.save(orderItem);
         }
 
         for (CartItem cartItem : cartItems) {
