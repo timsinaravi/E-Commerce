@@ -63,4 +63,9 @@ public class GlobalExceptionHandler  {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
+    @ExceptionHandler(exception = CategoryDeletionNotAllowedException.class)
+    public ResponseEntity<String> handleCategoryDeletionNotAllowedException(CategoryDeletionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
 }

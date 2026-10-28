@@ -3,6 +3,7 @@ package com.ecommerce.service.impl;
 import com.ecommerce.dto.request.CategoryRequestDto;
 import com.ecommerce.dto.response.CategoryResponseDto;
 import com.ecommerce.entity.Category;
+import com.ecommerce.exception.CategoryDeletionNotAllowedException;
 import com.ecommerce.exception.CategoryNotFoundException;
 import com.ecommerce.exception.DuplicateCategoryException;
 import com.ecommerce.mapper.CategoryMapper;
@@ -72,8 +73,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long id) {
 
-        categoryRepository.findById(id)
+        Category category =categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        if (!category.getProducts().isEmpty()) {
+            throw new CategoryDeletionNotAllowedException("Cannot delete category because products exist");
+        }
         categoryRepository.deleteById(id);
     }
 
