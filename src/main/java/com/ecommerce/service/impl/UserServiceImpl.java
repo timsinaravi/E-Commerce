@@ -63,6 +63,10 @@ public class UserServiceImpl implements UserService {
 
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
+
+        if (userRepository.existsByEmail(dto.getEmail()) && ! (user.getEmail().equals(dto.getEmail()))) {
+            throw new DuplicateEmailException("Email already exists");
+        }
         user.setEmail(dto.getEmail());
         user.setPassword(dto.getPassword());
         user.setPhone(dto.getPhone());
