@@ -59,6 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 
+        if (categoryRepository.existsByName(dto.getName()) && ! category.getName().equals(dto.getName())){
+            throw new DuplicateCategoryException("Category name already exists");
+        }
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
 
