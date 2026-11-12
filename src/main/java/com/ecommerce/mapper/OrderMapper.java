@@ -21,7 +21,7 @@ public class OrderMapper {
         OrderResponseDto dto = new OrderResponseDto();
 
         dto.setId(order.getId());
-        dto.setUserId(order.getUser().getId());
+        dto.setUserId(order.getAppUser().getId());
         dto.setStatus(order.getStatus());
         dto.setTotalAmount(order.getTotalAmount());
 

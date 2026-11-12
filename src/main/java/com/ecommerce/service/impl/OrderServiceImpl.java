@@ -33,10 +33,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto placeOrder(Long userId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Cart cart = user.getCart();
+        Cart cart = appUser.getCart();
         if (cart == null) {
             throw new CartNotFoundException("Cart not found");
         }
@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = new Order();
-        order.setUser(user);
+        order.setAppUser(appUser);
         order.setStatus(Status.PLACED);
         BigDecimal totalAmount = new BigDecimal(0);
 
@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponseDto> getOrdersByUser(Long userId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
 
         List<Order> orders = orderRepository.findOrdersByUserId(userId);

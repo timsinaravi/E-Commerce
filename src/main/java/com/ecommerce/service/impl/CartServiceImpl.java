@@ -35,16 +35,16 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponseDto create(Long userId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (user.getCart() != null) {
+        if (appUser.getCart() != null) {
             throw new DuplicateCartException("Cart already exists");
         }
 
         Cart cart = new Cart();
-        user.setCart(cart);
-        cart.setUser(user);
+        appUser.setCart(cart);
+        cart.setAppUser(appUser);
 
         Cart cartSaved = cartRepository.save(cart);
         return cartMapper.mapToDto(cartSaved);
@@ -53,10 +53,10 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartResponseDto getCart(Long userId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        Cart cart = user.getCart();
+        Cart cart = appUser.getCart();
         if (cart == null) {
             throw new CartNotFoundException("Cart not found");
         }
@@ -67,17 +67,17 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartItemResponseDto addCartItem(Long userId, CartItemRequestDto dto) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (user.getCart() == null) {
+        if (appUser.getCart() == null) {
             throw new CartNotFoundException("Cart not found");
         }
 
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
-        Cart cart = user.getCart();
+        Cart cart = appUser.getCart();
         List<CartItem> cartItems = cart.getCartItems();
         int totalQuantity = dto.getQuantity();
         boolean isProductFound = false;
@@ -119,17 +119,17 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartItemResponseDto updateCartItem(Long userId, Long cartItemId, UpdateCartItemRequestDto dto) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (user.getCart() == null) {
+        if (appUser.getCart() == null) {
             throw new CartNotFoundException("Cart not found");
         }
 
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemNotFound("Cart Item not found"));
 
-        Cart cart = user.getCart();
+        Cart cart = appUser.getCart();
 
         if (cart.equals(cartItem.getCart())) {
             if (dto.getQuantity() > cartItem.getProduct().getStock()) {
@@ -147,17 +147,17 @@ public class CartServiceImpl implements CartService {
     @Override
     public void removeCartItem(Long userId, Long cartItemId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        if (user.getCart() == null) {
+        if (appUser.getCart() == null) {
             throw new CartNotFoundException("Cart not found");
         }
 
         CartItem cartItem = cartItemRepository.findById(cartItemId)
                 .orElseThrow(() -> new CartItemNotFound("Cart Item not found"));
 
-        Cart cart = user.getCart();
+        Cart cart = appUser.getCart();
         List<CartItem> cartItems = cart.getCartItems();
 
         if (!cart.equals(cartItem.getCart())) {
@@ -171,14 +171,14 @@ public class CartServiceImpl implements CartService {
     @Override
     public void clearCart(Long userId) {
 
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
 
-        if (user.getCart() == null){
+        if (appUser.getCart() == null){
             throw new CartNotFoundException("Cart not found");
         }
 
-        List<CartItem> cartItems = user.getCart().getCartItems();
+        List<CartItem> cartItems = appUser.getCart().getCartItems();
         for (CartItem cartItem : cartItems) {
             cartItemRepository.delete(cartItem);
         }
@@ -188,14 +188,14 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public BigDecimal getCartTotal(Long userId) {
-        User user = userRepository.findById(userId)
+        AppUser appUser = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
 
-        if (user.getCart() == null){
+        if (appUser.getCart() == null){
             throw new CartNotFoundException("Cart not found");
         }
 
-        List<CartItem> cartItems = user.getCart().getCartItems();
+        List<CartItem> cartItems = appUser.getCart().getCartItems();
         BigDecimal total = BigDecimal.ZERO;
 
         for (CartItem cartItem : cartItems) {

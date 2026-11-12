@@ -2,7 +2,7 @@ package com.ecommerce.service.impl;
 
 import com.ecommerce.dto.request.UserRequestDto;
 import com.ecommerce.dto.response.UserResponseDto;
-import com.ecommerce.entity.User;
+import com.ecommerce.entity.AppUser;
 import com.ecommerce.enums.Role;
 import com.ecommerce.exception.DuplicateEmailException;
 import com.ecommerce.exception.UserNotFoundException;
@@ -10,6 +10,7 @@ import com.ecommerce.mapper.UserMapper;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDto createUser(UserRequestDto dto) {
@@ -29,21 +31,22 @@ public class UserServiceImpl implements UserService {
             throw new DuplicateEmailException("Email already exists");
         }
 
-        User user = userMapper.mapToEntity(dto);
-        user.setRole(Role.USER);
-        User userSaved = userRepository.save(user);
-        return userMapper.mapToDto(userSaved);
+        AppUser appUser = userMapper.mapToEntity(dto);
+        appUser.setRole(Role.USER);
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        AppUser appUserSaved = userRepository.save(appUser);
+        return userMapper.mapToDto(appUserSaved);
 
     }
 
     @Override
     public List<UserResponseDto> getAllUsers() {
 
-        List<User> users = userRepository.findAll();
+        List<AppUser> appUsers = userRepository.findAll();
         List<UserResponseDto> dtos = new ArrayList<>();
 
-        for (User user : users) {
-            dtos.add(userMapper.mapToDto(user));
+        for (AppUser appUser : appUsers) {
+            dtos.add(userMapper.mapToDto(appUser));
         }
         return dtos;
     }
@@ -51,29 +54,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(Long id) {
 
-        User user = userRepository.findById(id)
+        AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        return userMapper.mapToDto(user);
+        return userMapper.mapToDto(appUser);
     }
 
     @Override
     public UserResponseDto updateUser(Long id, UserRequestDto dto) {
-        User user = userRepository.findById(id)
+        AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
+        appUser.setFirstName(dto.getFirstName());
+        appUser.setLastName(dto.getLastName());
 
-        if (userRepository.existsByEmail(dto.getEmail()) && ! (user.getEmail().equals(dto.getEmail()))) {
+        if (userRepository.existsByEmail(dto.getEmail()) && ! (appUser.getEmail().equals(dto.getEmail()))) {
             throw new DuplicateEmailException("Email already exists");
         }
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword());
-        user.setPhone(dto.getPhone());
-        user.setAddress(dto.getAddress());
+        appUser.setEmail(dto.getEmail());
+        appUser.setPhone(dto.getPhone());
+        appUser.setAddress(dto.getAddress());
 
-        User userUpdated = userRepository.save(user);
-        return userMapper.mapToDto(userUpdated);
+        AppUser appUserUpdated = userRepository.save(appUser);
+        return userMapper.mapToDto(appUserUpdated);
 
     }
 

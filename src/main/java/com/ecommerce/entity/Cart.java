@@ -23,7 +23,7 @@ public class Cart {
 
     @OneToOne
     @JoinColumn(name = "user_id", unique = true, nullable = false)
-    private User user;
+    private AppUser appUser;
 
     @OneToMany(mappedBy = "cart")
     private List<CartItem> cartItems = new ArrayList<>();

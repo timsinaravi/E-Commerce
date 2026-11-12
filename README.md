@@ -2,7 +2,7 @@
 
 A RESTful E-Commerce backend built with **Java, Spring Boot, Spring Data JPA, MySQL, Jakarta Bean Validation, and Maven**.
 
-The application implements the core backend operations of an e-commerce system, covering **user management, category and product management, cart operations, and order processing**.
+The application implements the core backend operations of an e-commerce system, covering **appUser management, category and product management, cart operations, and order processing**.
 
 ## Tech Stack
 
@@ -39,7 +39,7 @@ DTOs are used at the API boundary to keep request/response models separate from 
 
 ### User Management
 
-* Create, retrieve, update, and delete users
+* Create, retrieve, update, and delete appUsers
 * Email uniqueness validation
 * Request validation
 * User role support
@@ -60,7 +60,7 @@ DTOs are used at the API boundary to keep request/response models separate from 
 
 ### Cart Management
 
-* Create and retrieve user carts
+* Create and retrieve appUser carts
 * Add products to cart
 * Update cart item quantities
 * Remove cart items
@@ -70,7 +70,7 @@ DTOs are used at the API boundary to keep request/response models separate from 
 
 ### Order Processing
 
-* Create orders from the user's cart
+* Create orders from the appUser's cart
 * Validate cart contents and product stock before placing an order
 * Create order items containing the purchased product, quantity, and price
 * Calculate the order total
@@ -97,11 +97,11 @@ Handled cases include missing resources, duplicate email or category names, inva
 ### Users
 
 ```text
-POST    /api/users
-GET     /api/users
-GET     /api/users/{id}
-PUT     /api/users/{id}
-DELETE  /api/users/{id}
+POST    /api/appUsers
+GET     /api/appUsers
+GET     /api/appUsers/{id}
+PUT     /api/appUsers/{id}
+DELETE  /api/appUsers/{id}
 ```
 
 ### Categories
@@ -132,9 +132,9 @@ DELETE  /api/products/{id}
 POST    /api/carts/{userId}
 GET     /api/carts/{userId}
 POST    /api/cartitems/{userId}
-PUT     /api/users/{userId}/cartitems/{cartItemId}
-DELETE  /api/users/{userId}/cartitems/{cartItemId}
-DELETE  /api/users/{userId}/cart
+PUT     /api/appUsers/{userId}/cartitems/{cartItemId}
+DELETE  /api/appUsers/{userId}/cartitems/{cartItemId}
+DELETE  /api/appUsers/{userId}/cart
 GET     /api/carts/{userId}/total
 ```
 
@@ -144,7 +144,7 @@ GET     /api/carts/{userId}/total
 POST    /api/orders/{userId}
 GET     /api/orders
 GET     /api/orders/{id}
-GET     /api/orders/user/{userId}
+GET     /api/orders/appUser/{userId}
 ```
 
 ## How to Run
