@@ -1,6 +1,8 @@
 package com.ecommerce.service.impl;
 
 import com.ecommerce.dto.request.AuthRequestDto;
+import com.ecommerce.dto.response.AuthResponseDto;
+import com.ecommerce.security.jwt.JwtService;
 import com.ecommerce.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,16 +14,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-
     private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
     @Override
-    public String logIn(AuthRequestDto dto) {
+    public AuthResponseDto logIn(AuthRequestDto dto) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword()));
 
-        return "Success";
+        String token = jwtService.generateToken(dto.getEmail());
+        return new AuthResponseDto(token);
     }
 }

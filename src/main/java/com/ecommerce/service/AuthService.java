@@ -1,8 +1,9 @@
 package com.ecommerce.service;
 
 import com.ecommerce.dto.request.AuthRequestDto;
+import com.ecommerce.dto.response.AuthResponseDto;
 
 public interface AuthService {
 
-    String logIn(AuthRequestDto dto);
+    AuthResponseDto logIn(AuthRequestDto dto);
 }

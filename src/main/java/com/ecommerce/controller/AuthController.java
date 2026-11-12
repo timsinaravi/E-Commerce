@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.dto.request.AuthRequestDto;
+import com.ecommerce.dto.response.AuthResponseDto;
 import com.ecommerce.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public String logIn(@RequestBody @Valid AuthRequestDto dto) {
+    public AuthResponseDto logIn(@Valid @RequestBody AuthRequestDto dto) {
         return authService.logIn(dto);
     }
 
