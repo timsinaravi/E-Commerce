@@ -53,7 +53,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order order = new Order();
-        order.setAppUser(appUser);
+        order.setUser(appUser);
         order.setStatus(Status.PLACED);
         BigDecimal totalAmount = new BigDecimal(0);
 

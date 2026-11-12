@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
 
         Cart cart = new Cart();
         appUser.setCart(cart);
-        cart.setAppUser(appUser);
+        cart.setUser(appUser);
 
         Cart cartSaved = cartRepository.save(cart);
         return cartMapper.mapToDto(cartSaved);
