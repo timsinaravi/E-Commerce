@@ -1,9 +1,12 @@
 package com.ecommerce.service.impl;
 
 import com.ecommerce.dto.request.AuthRequestDto;
+import com.ecommerce.dto.request.UserRequestDto;
 import com.ecommerce.dto.response.AuthResponseDto;
+import com.ecommerce.dto.response.UserResponseDto;
 import com.ecommerce.security.jwt.JwtService;
 import com.ecommerce.service.AuthService;
+import com.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,7 +19,13 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final UserService userService;
 
+
+    @Override
+    public UserResponseDto register(UserRequestDto dto) {
+        return userService.createUser(dto);
+    }
 
     @Override
     public AuthResponseDto logIn(AuthRequestDto dto) {
