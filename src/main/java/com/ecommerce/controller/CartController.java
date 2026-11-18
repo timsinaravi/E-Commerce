@@ -4,65 +4,68 @@ import com.ecommerce.dto.request.CartItemRequestDto;
 import com.ecommerce.dto.request.UpdateCartItemRequestDto;
 import com.ecommerce.dto.response.CartItemResponseDto;
 import com.ecommerce.dto.response.CartResponseDto;
+import com.ecommerce.security.service.CustomUserDetails;
 import com.ecommerce.service.CartService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/carts")
 public class CartController {
 
     private final CartService cartService;
 
-    @PostMapping("/carts/{userId}")
-    public ResponseEntity<CartResponseDto> createCart(@PathVariable Long userId) {
 
-        CartResponseDto response = cartService.create(userId);
+    @PostMapping
+    public ResponseEntity<CartResponseDto> createCart(@AuthenticationPrincipal CustomUserDetails currentUser) {
+
+        CartResponseDto response = cartService.create(currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/carts/{userId}")
-    public ResponseEntity<CartResponseDto> getCart(@PathVariable Long userId) {
+    @GetMapping
+    public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        CartResponseDto response = cartService.getCart(userId);
+        CartResponseDto response = cartService.getCart(currentUser.getId());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/cartitems/{userId}")
-    public ResponseEntity<CartItemResponseDto> addCartItem(@PathVariable Long userId, @Valid @RequestBody CartItemRequestDto dto) {
+    @PostMapping("/items")
+    public ResponseEntity<CartItemResponseDto> addCartItem(@AuthenticationPrincipal CustomUserDetails currentUser, @Valid @RequestBody CartItemRequestDto dto) {
 
-        CartItemResponseDto response = cartService.addCartItem(userId, dto);
+        CartItemResponseDto response = cartService.addCartItem(currentUser.getId(), dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/users/{userId}/cartitems/{cartItemId}")
-    public ResponseEntity<CartItemResponseDto> updateCartItem(@PathVariable Long userId, @PathVariable Long cartItemId, @Valid @RequestBody UpdateCartItemRequestDto dto) {
-        CartItemResponseDto response = cartService.updateCartItem(userId, cartItemId, dto);
+    @PutMapping("/items/{cartItemId}")
+    public ResponseEntity<CartItemResponseDto> updateCartItem(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long cartItemId, @Valid @RequestBody UpdateCartItemRequestDto dto) {
+        CartItemResponseDto response = cartService.updateCartItem(currentUser.getId(), cartItemId, dto);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/users/{userId}/cartitems/{cartItemId}")
-    public ResponseEntity<Void> removeCartItem(@PathVariable Long userId, @PathVariable Long cartItemId) {
-         cartService.removeCartItem(userId, cartItemId);
+    @DeleteMapping("/items/{cartItemId}")
+    public ResponseEntity<Void> removeCartItem(@AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long cartItemId) {
+         cartService.removeCartItem(currentUser.getId(), cartItemId);
          return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/users/{userId}/cart")
-    public ResponseEntity<Void> clearCart(@PathVariable Long userId) {
-        cartService.clearCart(userId);
+    @DeleteMapping("/items")
+    public ResponseEntity<Void> clearCart(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        cartService.clearCart(currentUser.getId());
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/carts/{userId}/total")
-    public ResponseEntity<BigDecimal> getCartTotal(@PathVariable Long userId) {
+    @GetMapping("/total")
+    public ResponseEntity<BigDecimal> getCartTotal(@AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        BigDecimal response = cartService.getCartTotal(userId);
+        BigDecimal response = cartService.getCartTotal(currentUser.getId());
         return ResponseEntity.ok(response);
     }
 
