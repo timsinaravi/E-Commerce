@@ -1,12 +1,16 @@
 package com.ecommerce.service.impl;
 
 import com.ecommerce.dto.request.UserRequestDto;
+import com.ecommerce.dto.request.UserUpdateRequestDto;
 import com.ecommerce.dto.response.UserResponseDto;
 import com.ecommerce.entity.AppUser;
 import com.ecommerce.enums.Role;
 import com.ecommerce.exception.DuplicateEmailException;
+import com.ecommerce.exception.UserDeletionNotAllowedException;
 import com.ecommerce.exception.UserNotFoundException;
 import com.ecommerce.mapper.UserMapper;
+import com.ecommerce.repository.CartRepository;
+import com.ecommerce.repository.OrderRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final CartRepository cartRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public UserResponseDto createUser(UserRequestDto dto) {
@@ -60,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUser(Long id, UserRequestDto dto) {
+    public UserResponseDto updateUser(Long id, UserUpdateRequestDto dto) {
         AppUser appUser = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -84,6 +90,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (cartRepository.existsCartByUserId(id) || orderRepository.existsOrderByUserId(id)) {
+            throw new UserDeletionNotAllowedException("Cannot delete user because associated cart or orders exist");
+        }
         userRepository.deleteById(id);
 
     }

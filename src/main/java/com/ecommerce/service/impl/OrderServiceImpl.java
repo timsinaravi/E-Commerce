@@ -43,7 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
         List<CartItem> cartItems = cart.getCartItems();
         if (cartItems.isEmpty()) {
-            throw new CartItemNotFound("Cart item not found");
+            throw new CartEmptyException("Cannot place order because cart is empty");
         }
 
         for (CartItem cartItem : cartItems) {

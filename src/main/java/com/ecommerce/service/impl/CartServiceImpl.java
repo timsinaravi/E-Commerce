@@ -15,6 +15,7 @@ import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +32,7 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final CartItemMapper cartItemMapper;
 
-
+    @Transactional
     @Override
     public CartResponseDto create(Long userId) {
 
@@ -63,7 +64,7 @@ public class CartServiceImpl implements CartService {
         return cartMapper.mapToDto(cart);
     }
 
-
+    @Transactional
     @Override
     public CartItemResponseDto addCartItem(Long userId, CartItemRequestDto dto) {
 
@@ -115,7 +116,7 @@ public class CartServiceImpl implements CartService {
         return cartItemMapper.mapToDto(cartItemSaved);
     }
 
-
+    @Transactional
     @Override
     public CartItemResponseDto updateCartItem(Long userId, Long cartItemId, UpdateCartItemRequestDto dto) {
 
@@ -144,6 +145,7 @@ public class CartServiceImpl implements CartService {
         return cartItemMapper.mapToDto(updateCartItem);
     }
 
+    @Transactional
     @Override
     public void removeCartItem(Long userId, Long cartItemId) {
 
@@ -168,6 +170,7 @@ public class CartServiceImpl implements CartService {
 
     }
 
+    @Transactional
     @Override
     public void clearCart(Long userId) {
 

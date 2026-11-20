@@ -5,9 +5,12 @@ import com.ecommerce.dto.response.ProductResponseDto;
 import com.ecommerce.entity.Category;
 import com.ecommerce.entity.Product;
 import com.ecommerce.exception.CategoryNotFoundException;
+import com.ecommerce.exception.ProductDeletionNotAllowedException;
 import com.ecommerce.exception.ProductNotFoundException;
 import com.ecommerce.mapper.ProductMapper;
+import com.ecommerce.repository.CartItemRepository;
 import com.ecommerce.repository.CategoryRepository;
+import com.ecommerce.repository.OrderItemRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final CartItemRepository cartItemRepository;
+    private final OrderItemRepository orderItemRepository;
 
     @Override
     public ProductResponseDto createProduct(ProductRequestDto dto) {
@@ -111,6 +116,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found"));
 
+        if (cartItemRepository.existsCartItemByProductId(id) ||
+            orderItemRepository.existsOrderItemByProductId(id)) {
+
+            throw new  ProductDeletionNotAllowedException("Cannot delete product because associated cartItems or orderItems exist");
+        }
         productRepository.deleteById(id);
     }
 

@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.dto.request.UserRequestDto;
+import com.ecommerce.dto.request.UserUpdateRequestDto;
 import com.ecommerce.dto.response.UserResponseDto;
 import com.ecommerce.security.service.CustomUserDetails;
 import com.ecommerce.service.UserService;
@@ -47,7 +48,7 @@ public class UserController {
 
 
     @PutMapping("/me")
-    public ResponseEntity<UserResponseDto> updateMyProfile(@AuthenticationPrincipal CustomUserDetails currentUser,@Valid @RequestBody UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> updateMyProfile(@AuthenticationPrincipal CustomUserDetails currentUser,@Valid @RequestBody UserUpdateRequestDto dto) {
 
         UserResponseDto user = userService.updateUser(currentUser.getId(), dto);
         return ResponseEntity.ok(user);
@@ -55,7 +56,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto dto) {
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequestDto dto) {
 
         UserResponseDto user = userService.updateUser(id, dto);
         return ResponseEntity.ok(user);

@@ -68,4 +68,14 @@ public class GlobalExceptionHandler  {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
 
+    @ExceptionHandler(exception = UserDeletionNotAllowedException.class)
+    public ResponseEntity<String> handleUserDeletionNotAllowedException(UserDeletionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ProductDeletionNotAllowedException.class)
+    public ResponseEntity<String> handleProductDeletionNotAllowedException(ProductDeletionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
 }
