@@ -1,196 +1,137 @@
 # E-Commerce Backend
 
-A RESTful E-Commerce backend built with **Java, Spring Boot, Spring Data JPA, MySQL, Jakarta Bean Validation, and Maven**.
+A RESTful E-Commerce backend developed using **Java 17 and Spring Boot**, with MySQL for data persistence and Spring Security for authentication and authorization.
 
-The application implements the core backend operations of an e-commerce system, covering **appUser management, category and product management, cart operations, and order processing**.
+The application covers essential e-commerce operations, including user management, product and category management, shopping cart functionality, and order processing.
 
 ## Tech Stack
 
-* **Java**
-* **Spring Boot**
-* **Spring Data JPA / Hibernate**
-* **MySQL**
-* **Jakarta Bean Validation**
-* **Maven**
-* **Lombok**
-* **REST APIs**
+- **Language:** Java 17
+- **Framework:** Spring Boot 4.1.0
+- **Database:** MySQL
+- **ORM / Persistence:** Spring Data JPA, Hibernate
+- **Security:** Spring Security, JWT (JJWT)
+- **Validation:** Jakarta Bean Validation
+- **Build Tool:** Maven
+- **Other:** Lombok, REST APIs
 
-## Architecture & Project Structure
+## Features
 
-The application follows a **layered architecture** with clear separation between API handling, business logic, data access, and persistence.
+- **User Management:** User registration, profile management, email uniqueness validation, and USER/ADMIN role support.
+- **Category Management:** Category CRUD operations and product associations.
+- **Product Management:** Product CRUD operations, category association, product search, and stock validation.
+- **Cart Management:** Add, update, and remove cart items, clear the cart, calculate totals, and validate product stock.
+- **Order Processing:** Place orders from the user's cart, calculate order totals, update product stock, and maintain purchase price snapshots.
+- **Validation & Exception Handling:** Request validation, custom exceptions, and centralized exception handling.
+- **Data Integrity:** Transactional operations, resource ownership checks, and deletion restrictions for associated records.
+
+## Security
+
+- JWT-based authentication using Spring Security.
+- BCrypt password hashing.
+- Stateless session management.
+- USER and ADMIN role-based authorization.
+- Public access to registration, login, product retrieval, and category retrieval.
+- Protected user, cart, and order operations.
+- Users can only access and manage their own cart and personal order history.
+- Administrative operations are restricted to the ADMIN role.
+
+Public registration assigns the USER role by default. ADMIN accounts are provisioned separately.
+
+## Project Structure
 
 ```text
-src/main/java/com/ecommerce
-│
-├── controller      # Exposes REST API endpoints
-├── service         # Defines application operations
-├── service/impl    # Implements business logic
-├── repository      # Handles data access with Spring Data JPA
-├── entity          # JPA persistence models
-├── dto             # API request and response models
-├── mapper          # Converts between entities and DTOs
-├── exception       # Custom exceptions and global error handling
-└── enums           # Application-specific enumerations
+com.ecommerce
+├── controller       # Handles incoming HTTP requests and API responses
+├── service          # Defines business operation interfaces
+│   └── impl         # Implements business logic
+├── repository       # Handles database operations using Spring Data JPA
+├── entity           # Contains JPA entity classes
+├── dto              # Contains request and response DTOs
+├── mapper           # Converts between entities and DTOs
+├── exception        # Custom exceptions and global exception handling
+├── enums            # Contains application-specific enumerations
+└── security         # Contains security configuration and authentication logic
+    ├── config       # Spring Security configuration
+    ├── jwt          # JWT generation, validation, and filtering
+    └── service      # Custom UserDetails implementation
 ```
 
-DTOs are used at the API boundary to keep request/response models separate from JPA entities.
-
-## Core Features
-
-### User Management
-
-* Create, retrieve, update, and delete appUsers
-* Email uniqueness validation
-* Request validation
-* User role support
-
-### Category Management
-
-* Category CRUD operations
-* Unique category names
-* Category-product relationship
-
-### Product Management
-
-* Product CRUD operations
-* Category association and updates
-* Search products by name
-* Retrieve products by category
-* Price and stock validation
-
-### Cart Management
-
-* Create and retrieve appUser carts
-* Add products to cart
-* Update cart item quantities
-* Remove cart items
-* Clear cart
-* Calculate cart total
-* Validate product stock when modifying cart quantities
-
-### Order Processing
-
-* Create orders from the appUser's cart
-* Validate cart contents and product stock before placing an order
-* Create order items containing the purchased product, quantity, and price
-* Calculate the order total
-* Update product stock as part of order placement
-* Clear the cart after a successful order
-* Process order creation using Spring's `@Transactional`
-
-## Validation & Exception Handling
-
-The application uses **Jakarta Bean Validation** for request validation, including:
-
-* Required fields
-* Email format
-* Password length
-* Positive prices and quantities
-* Non-negative product stock
-
-Business-specific errors are handled through **custom exceptions** and a centralized `@RestControllerAdvice`.
-
-Handled cases include missing resources, duplicate email or category names, invalid cart operations, empty carts, and insufficient stock.
+The application follows a layered architecture, separating API handling, business logic, data access, and persistence. DTOs keep API request and response models separate from JPA entities.
 
 ## API Overview
 
-### Users
+All endpoints are prefixed with `/api`.
 
-```text
-POST    /api/appUsers
-GET     /api/appUsers
-GET     /api/appUsers/{id}
-PUT     /api/appUsers/{id}
-DELETE  /api/appUsers/{id}
-```
+| Module | Main Endpoints |
+|---|---|
+| Authentication | `/auth/register`, `/auth/login` |
+| Users | `/users`, `/users/me`, `/users/{id}` |
+| Categories | `/categories`, `/categories/{id}` |
+| Products | `/products`, `/products/{id}`, `/products/search`, `/products/category/{categoryId}` |
+| Cart | `/carts`, `/carts/items`, `/carts/total` |
+| Orders | `/orders`, `/orders/my`, `/orders/{orderId}`, `/orders/user/{userId}` |
 
-### Categories
+**Access Control:** Registration, login, product retrieval, and category retrieval are public. Protected endpoints require authentication, while administrative operations require the ADMIN role.
 
-```text
-POST    /api/categories
-GET     /api/categories
-GET     /api/categories/{id}
-PUT     /api/categories/{id}
-DELETE  /api/categories/{id}
-```
-
-### Products
-
-```text
-POST    /api/products
-GET     /api/products
-GET     /api/products/{id}
-GET     /api/products/search?name={name}
-GET     /api/products/category/{categoryId}
-PUT     /api/products/{id}
-DELETE  /api/products/{id}
-```
-
-### Cart
-
-```text
-POST    /api/carts/{userId}
-GET     /api/carts/{userId}
-POST    /api/cartitems/{userId}
-PUT     /api/appUsers/{userId}/cartitems/{cartItemId}
-DELETE  /api/appUsers/{userId}/cartitems/{cartItemId}
-DELETE  /api/appUsers/{userId}/cart
-GET     /api/carts/{userId}/total
-```
-
-### Orders
-
-```text
-POST    /api/orders/{userId}
-GET     /api/orders
-GET     /api/orders/{id}
-GET     /api/orders/appUser/{userId}
-```
-
-## How to Run
+## Getting Started
 
 ### Prerequisites
 
-* **Java 17+**
-* **Maven**
-* **MySQL**
+- Java 17 or later
+- MySQL
+- Maven
 
-### Setup
+### 1. Clone the repository
 
-1. Clone the repository.
-
-2. Create a MySQL database for the application.
-
-3. Configure the database connection in:
-
-```text
-src/main/resources/application.properties
+```bash
+git clone https://github.com/timsinaravi/E-Commerce.git
+cd E-Commerce
 ```
 
-4. Set the following properties using your local MySQL configuration:
+### 2. Create a database
+
+```sql
+CREATE DATABASE db_name;
+```
+
+### 3. Configure database connection
+
+Update `src/main/resources/application.properties` with your MySQL credentials:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/YOUR_DATABASE_NAME
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+spring.datasource.url=jdbc:mysql://localhost:3306/db_name
+spring.datasource.username=db_username
+spring.datasource.password=db_password
 ```
 
-5. Start the application:
+### 4. Run the application
+
+Using Maven:
 
 ```bash
 mvn spring-boot:run
 ```
 
-The application will be available at:
+Or use the Maven Wrapper:
 
-```text
-http://localhost:8080
+```bash
+# Windows
+.\mvnw.cmd spring-boot:run
+
+# Linux / macOS
+./mvnw spring-boot:run
 ```
 
-The REST APIs can be accessed using an API client such as **Postman**.
+The application will be available at `http://localhost:8080`.
 
-## Project Scope
+## Authentication
 
-The current implementation focuses on the core backend operations of an e-commerce application while maintaining a structured and extensible architecture.
+1. Register an account using `POST /api/auth/register`.
+2. Log in using `POST /api/auth/login`.
+3. Copy the JWT returned in the login response.
+4. Include the token in the `Authorization` header when accessing protected endpoints:
 
-Future development can extend the system with **authentication and authorization, JWT-based security, pagination and sorting, file uploads, email notifications, payment integration, API documentation, automated testing, and Docker support**.
+```http
+Authorization: Bearer YOUR_JWT_TOKEN
+```
